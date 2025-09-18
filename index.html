@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
+    <link rel="stylesheet" href="node_modules/ol/ol.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add data to Fobney map</title>
+  </head>
+  <body>
+    <h1>Fobney Meadow map</h1>
+    <div class="form">
+    <form>
+      <p>
+      </p>
+      <p>
+      <button type="button" id="create">Create</button>
+      <select id="type">
+        <option value="Point">Point</option>
+        <option value="LineString">Line</option>
+        <option value="Polygon">Polygon</option>
+        <option value="Circle">Circle</option>
+      </select>
+      &middot;
+      <button type="button" id="select">Select</button> &middot;
+      <button type="button" id="delete">Delete</button> &middot;
+      <button type="button" id="mobileloc">Show location</button>
+      </p>
+
+      <p>
+      <button type="button" id="download-geojson">Download points</button>
+    </form>
+    </div>
+    <a id="inst"><h3><span id="instbtn">Instructions</span></h3></a>
+    <div id="instructions">
+    <p>By default you will see a base map of Fobney meadow.<br/>
+You can zoom in and out and drag the map around for a better view.</p>
+<h4>Show location</h4>
+<p>To show where you are on the map hit <b>Show location</b> and hit <b>Turn
+off location</b> to remove your dot</p>
+<h4>Add features</h4>
+<p>You can record points, lines, circles or polygons by choosing from the
+drop-down below next to create and clicking <b>create</b>.<br/>
+The cursor will change to a circle to show where you are creating a feature.
+<ul>
+<li><b>Point</b> - click where you want a point.</li>
+<li><b>Line</b> - click the first point of the line, click any intermediate
+points and double click the last point to finish.</li>
+<li><b>Polygon</b> - click all the points of the polygon and double click or
+right click the last one that joins it up.</li>
+<li><b>Circle</b> - click the centre of the circle and click again once it's
+the size you want.</li>
+</ul>
+</p>
+<h4>Modify features</h4>
+<p>Click <b>create</b> then allow the cursor to snap to the point or vertex
+on the line or polygon you want to move. Whilst holding down the mouse
+button move the point to where you want it and release.</p>
+<h4>Select features</h4>
+<p>Click <b>select</b> then select a feature. Hold down shift to select more than
+one.</p>
+<h4>Delete features</h4>
+<p>Once you have selected some features, hit <b>delete</b> to delete those
+selected.</p>
+<h4>Download points</h4>
+<p>Allows you to download points for your own use or to send to me to add to
+the base map</p>
+<p><b><i>Click this window to hide the instructions</i></b></p>
+    </div>
+    <div>
+    <div id="map"></div>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

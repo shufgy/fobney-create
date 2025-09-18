@@ -1,0 +1,16 @@
+{
+  "name": "fobney-balsam",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build --base=./",
+    "serve": "vite preview",
+    "postbuild": "scp -r dist/* the.earth.li:public_html/fobney-create-test"
+  },
+  "devDependencies": {
+    "vite": "^7.0.6"
+  },
+  "dependencies": {
+    "ol": "latest"
+  }
+}
