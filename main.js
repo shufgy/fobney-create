@@ -22,6 +22,7 @@ import Point from 'ol/geom/Point';
 import {fromLonLat} from 'ol/proj';
 import {createEmpty} from 'ol/extent';
 import {extend} from 'ol/extent';
+import {containsExtent} from 'ol/extent';
 import OSM from 'ol/source/OSM';
 
 const fobney = new GeoTIFF({
@@ -205,18 +206,26 @@ function mobloc(pos) {
     const accuracy = circular(coords, pos.coords.accuracy);
 
     mobpos.clear(true);
+    let point = new Feature(new Point(fromLonLat(coords)));
     mobpos.addFeatures([
       new Feature(
         accuracy.transform('EPSG:4326', map.getView().getProjection()),
       ),
-      new Feature(new Point(fromLonLat(coords))),
+        point
     ]);
 
     if (!mobpos.isEmpty()) {
-        map.getView().fit(mobpos.getExtent(),{
-            maxZoom: 18,
-            padding: [50,50,50,50],
-        });
+        var mapExtent = map.getView().calculateExtent(map.getSize());
+        var extentPoint = point.getGeometry().getExtent();
+        /* If the point isn't in the viewport, zoom to the point */
+        if (!containsExtent(mapExtent, extentPoint)) {
+            /* Keep zoom level at level set */
+            let zoom = map.getView().get('zoom');
+            map.getView().fit(mobpos.getExtent(),{
+                maxZoom: zoom,
+                padding: [50,50,50,50],
+            });
+        }
     }
 }
 
