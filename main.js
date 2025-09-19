@@ -85,10 +85,15 @@ function addInteractions() {
     type: typeSelect.value,
   });
   map.addInteraction(draw);
+  draw.on('drawend', function (event) {
+    let item = event.feature;
+    item.set('name', '');
+  });
   snap = new Snap({source: source});
   map.addInteraction(snap);
   modify = new Modify({source: source});
   map.addInteraction(modify);
+  updateNames();
 }
 
 /**
@@ -264,4 +269,39 @@ function hideinstructions() {
 
 document.getElementById('inst').addEventListener('click', hideinstructions);
 document.getElementById('instructions').addEventListener('click', hideinstructions);
+
+const objName = document.getElementById('objname');
+
+function updateNames() {
+  let text = '';
+  let count = 0;
+  selectSingleClick.getFeatures().forEach(function (feature) {
+      name = feature.get('name');
+      if (name) {
+        if (text !== '') {
+            text = text + ','
+        }
+        text = text + name
+      }
+      count++;
+  });
+  objName.value = text;
+  if (count == 0) {
+    objName.disabled = true;
+  } else {
+    objName.disabled = false;
+  }
+}
+
+selectSingleClick.on('select', updateNames);
+
+objName.onchange = function () {
+  name = objName.value;
+  if (name !== null) {
+      selectSingleClick.getFeatures().forEach(function (feature) {
+          feature.set('name', name);
+      });
+  }
+  updateNames();
+};
 
