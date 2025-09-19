@@ -195,7 +195,7 @@ document.getElementById('delete').addEventListener('click', function () {
 
 let mobileid = null;
 let moboptions = {
-  enableHighAccuracy: false,
+  enableHighAccuracy: true,
   timeout: 20000,
   maximumAge: 0,
 };
