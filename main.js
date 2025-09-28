@@ -309,6 +309,12 @@ function updateNames() {
 
 selectSingleClick.on('select', updateNames);
 
+objName.addEventListener('pointerenter', function () {
+  if (objName.disabled == true) {
+    alert('Please select an item to name by clicking Select and the item(s)!');
+  }
+});
+
 objName.onchange = function () {
   name = objName.value;
   if (name !== null) {
