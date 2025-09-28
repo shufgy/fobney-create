@@ -187,11 +187,16 @@ document.getElementById('select').addEventListener('click', function () {
   });
 
 document.getElementById('delete').addEventListener('click', function () {
-    if (confirm('Are you sure?')) {
-        selectSingleClick.getFeatures().forEach(function (feature) {
-            source.removeFeature(feature);
-        });
-    }
+    var features =  selectSingleClick.getFeatures();
+    if (features.getLength() !== 0) {
+        if (confirm('Are you sure?')) {
+            features.forEach(function (feature) {
+                source.removeFeature(feature);
+            });
+        }
+   } else {
+     alert('Select some features with Select first in order to delete them');
+   }
 });
 
 let mobileid = null;
