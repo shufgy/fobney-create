@@ -187,9 +187,9 @@ document.getElementById('select').addEventListener('click', function () {
   });
 
 document.getElementById('delete').addEventListener('click', function () {
-    var features =  selectSingleClick.getFeatures();
+    var features = selectSingleClick.getFeatures();
     if (features.getLength() !== 0) {
-        if (confirm('Are you sure?')) {
+        if (confirm('Delete selected features: Are you sure?')) {
             features.forEach(function (feature) {
                 source.removeFeature(feature);
             });
@@ -199,6 +199,18 @@ document.getElementById('delete').addEventListener('click', function () {
    }
 });
 
+document.getElementById('delete-all').addEventListener('click', function () {
+    var features = source.getFeatures();
+    if (features.length !== 0) {
+        if (confirm('Delete all created features: Are you sure?')) {
+            features.forEach(function (feature) {
+                source.removeFeature(feature);
+            });
+        }
+   } else {
+     alert('Create some features first in order to delete them');
+   }
+});
 let mobileid = null;
 let moboptions = {
   enableHighAccuracy: true,
