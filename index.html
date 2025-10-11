@@ -31,16 +31,29 @@
 
       <p>
       <button type="button" id="download-geojson">Download data</button>
+      </p>
+      <p>
+      <span id="datalayers">
+      </span>
+      <button type="button" id="hide-data">Hide data</button> &middot;
+      <button type="button" id="submit-data" disabled>Submit data</button>
+      </p>
     </form>
     </div>
     <a id="inst"><h3><span id="instbtn">Instructions</span></h3></a>
     <div id="instructions">
-    <p>By default you will see a base map of Fobney meadow.<br/>
-You can zoom in and out and drag the map around for a better view.</p>
+<p><b><i>Click this window to hide the instructions</i></b></p>
+<p>By default you will see a base map of Fobney meadow.<br/>
+You can zoom in and out and drag the map around for a better view.<br/>
+Features like the pylons are numbered and benches are highlighted to show
+where they are.
+</p>
 <h4>Show location</h4>
-<p>To show where you are on the map hit <b>Show location</b> and hit <b>Turn
-off location</b> to remove your dot</p>
-<h4>Add features</h4>
+<p>If you have GPS in your browser (i.e. you're using a phone) then this
+will show where you are on the map. Click <b>Turn off location</b> to remove
+your dot</p>
+<h3>Creating and modifying data</h3>
+<h4>Create features</h4>
 <p>You can record points, lines, circles or polygons by choosing from the
 drop-down below next to create and clicking <b>create</b>.<br/>
 The cursor will change to a circle to show where you are creating a feature.
@@ -72,7 +85,33 @@ selected.</p>
 <p>Allows you to download the data for your own use or to send to me (<a
 href="mailto:huggie@earth.li">huggie@earth.li</a>) to add to the base
 map</p>
+<h3>Adding Balsam sightings</h3>
+<h4>Show himalayan-balsam data</h4>
+<p>Shows the base himalayan balsam data layer</p>
+<h4>Show this data</h4>
+<p>Shows the data in the text box to the left of the button on the map
+instead</p>
+<h4>Hide data</h4>
+<p>Hides all the data layers data</p>
+<h4>Submit data</h4>
+<p>Lets you submit data you have created. First load the current base layer,
+then create some data over your own (see <b>Create</b> above) then when you
+are happy click Submit data.<br/>You will be asked for a comment that should
+be descriptive (no spaces but a-z A-Z 0-9 and - are allowed) and indicates
+if this is additional balsam or successful removals for instance. Then hit
+submit and it should be available in the drop down to look at.</p>
 <p><b><i>Click this window to hide the instructions</i></b></p>
+    </div>
+    <div id="comment-pop-up">
+    <div id="comment-form">
+    <form>
+    <p>Please add a comment describing whether this is current status
+    <br/>or additions or deletions or something else.
+    <br/>You may use a-z A-Z 0-9 and - (no spaces)</p>
+    Comment: <input type="text" width=25 id="comment"></p>
+    <p><button type="button" id="submit-comment">Submit data</button></p>
+    </form>
+    </div>
     </div>
     <div>
     <div id="map"></div>

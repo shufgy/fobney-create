@@ -65,9 +65,19 @@ const vecmobpos = new VectorLayer({
     'circle-fill-color': '#8833aa',
   },
 });
+const datalayer = new VectorLayer({
+  style: {
+    'fill-color': 'rgba(255, 255, 255, 0.2)',
+    'stroke-color': '#6600ff',
+    'stroke-width': 2,
+    'circle-radius': 7,
+    'circle-fill-color': '#6600ff',
+    },
+});
+
 
 const map = new Map({
-  layers: [osm, raster, vector, vecmobpos],
+  layers: [osm, raster, datalayer, vector, vecmobpos],
   target: 'map',
   view: new View({
     center: fromLonLat([-0.9845, 51.4381]),
@@ -199,13 +209,18 @@ document.getElementById('delete').addEventListener('click', function () {
    }
 });
 
+function deleteAllFeatures() {
+    var features = source.getFeatures();
+    features.forEach(function (feature) {
+        source.removeFeature(feature);
+    });
+}
+
 document.getElementById('delete-all').addEventListener('click', function () {
     var features = source.getFeatures();
     if (features.length !== 0) {
         if (confirm('Delete all created features: Are you sure?')) {
-            features.forEach(function (feature) {
-                source.removeFeature(feature);
-            });
+            deleteAllFeatures();
         }
    } else {
      alert('Create some features first in order to delete them');
@@ -337,3 +352,143 @@ objName.onchange = function () {
   updateNames();
 };
 
+var curdatalayer = '';
+
+function showdatalayer(layername, filename) {
+    const datasource = new VectorSource({
+            url: 'https://the.earth.li/~huggie/fobney/data/'+filename,
+            format: new GeoJSON(),
+    });
+    datalayer.setSource(datasource);
+    curdatalayer = layername;
+    var subbtn = document.getElementById('submit-data');
+    subbtn.innerHTML = 'Submit '+layername+' data';
+    subbtn.disabled = false;
+};
+
+async function refreshDataLayers() {
+    const index = await fetch('https://the.earth.li/~huggie/fobney/data/index.json', {cache: "no-cache"});
+
+    var addhtml = '';
+    var js = await index.json();
+    Object.keys(js).forEach(function(item) {
+        const fileregextmp = `^${item}(-([0-9]+)-([a-zA-Z0-9-]+))?\.json`;
+        const fileregex = new RegExp(fileregextmp);
+        addhtml = addhtml + '<p><button type="button" id="show-layer-';
+        addhtml = addhtml + item + '">Show base ' + item + ' data</button> &middot; ';
+        addhtml = addhtml + 'Submitted data: <select id="sel-' + item + '">';
+        var files = js[item];
+        files.forEach((file) => {
+            var match = fileregex.exec(file);
+            var prettytext = '';
+            if (match[2]) {
+                var epoch = match[2];
+                var comment = match[3];
+                var filetime = new Date(Number(epoch+"000"));
+                var t = filetime.toDateString() + ' ' + filetime.toTimeString();
+                prettytext = comment + ' @ ' + t;
+            } else {
+                prettytext = item + ' base';
+            }
+            addhtml = addhtml + '<option value="'+file+'">'+prettytext+'</option>';
+        });
+        addhtml = addhtml + '</select> &middot;';
+        addhtml = addhtml + '<button type="button" id="add-layer-';
+        addhtml = addhtml + item + '">Show this data</button>';
+        addhtml = addhtml + '</p>';
+
+    });
+    var datalayers = document.getElementById('datalayers');
+    datalayers.innerHTML = addhtml;
+
+    // Add the event listeners
+    Object.keys(js).forEach(function(item) {
+        document.getElementById('show-layer-'+item).addEventListener('click',
+function () {
+            showdatalayer(item, item+'.json');
+        });
+        document.getElementById('add-layer-'+item).addEventListener('click',
+function () {
+            var file = document.getElementById('sel-'+item);
+            showdatalayer(item, file.value);
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    refreshDataLayers();
+});
+
+
+document.getElementById('hide-data').addEventListener('click', function () {
+    datalayer.setSource(null);
+    curdatalayer = '';
+    document.getElementById('submit-data').disabled = true;
+});
+
+
+document.getElementById('submit-comment').addEventListener('click', async function () {
+    var features = source.getFeatures();
+    var comment = document.getElementById('comment').value;
+    if (features.length == 0) {
+        alert('Create some features first before submitting them!');
+    } else if (!/^[a-zA-Z0-9-]+$/.test(comment)) {
+        alert('Comment must only contain a-z A-Z 0-9 and -');
+    } else {
+        var text = new GeoJSON().writeFeatures(
+          features,
+          {
+            featureProjection: 'EPSG:3857',
+            dataProjection: 'EPSG:4326'
+          }
+        );
+        const stream = new Blob([text], { type:
+            'applicatio/json',}).stream();
+        const gzipstream = stream.pipeThrough(new CompressionStream("gzip"));
+        const gzresp = new Response(gzipstream);
+        const gzblob = await gzresp.blob();
+        const arraybuf = await gzblob.arrayBuffer();
+        const b64data = btoa(String.fromCharCode(...new Uint8Array(arraybuf)));
+
+        // https://the.earth.li/~huggie/cgi-bin/receive-data.pl?site=fobney&type=himalayan-balsam
+
+        const baseuri = 'https://the.earth.li/~huggie/cgi-bin/receive-data.py'
+
+        const response = await fetch(baseuri, {
+          method: "POST",
+          body: new URLSearchParams({
+            site: "fobney",
+            type: curdatalayer,
+            "comment": comment,
+            data: b64data
+          }),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+          }
+        });
+
+        const json = await response.json();
+        if (json.error) {
+            alert("Error: "+json.error);
+        } else {
+            refreshDataLayers();
+            deleteAllFeatures();
+            var div = document.getElementById('comment-pop-up');
+            div.style.display = 'none';
+            var c = document.getElementById('comment');
+            c.value = '';
+
+            alert("Saved "+json.filename);
+        }
+    }
+});
+
+document.getElementById('submit-data').addEventListener('click', async function () {
+    var features = source.getFeatures();
+    if (features.length == 0) {
+     alert('Create some features first before submitting them!');
+    } else {
+        var div = document.getElementById('comment-pop-up');
+        div.style.display = 'block';
+    }
+});
