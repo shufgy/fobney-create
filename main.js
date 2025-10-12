@@ -25,6 +25,17 @@ import {extend} from 'ol/extent';
 import {containsExtent} from 'ol/extent';
 import OSM from 'ol/source/OSM';
 
+var testMode = true;
+
+if (window.location.href == "https://the.earth.li/~huggie/fobney-create/") {
+    testMode = false;
+}
+
+if (testMode) {
+    const title = document.getElementById('title');
+    title.innerHTML = title.innerHTML + ' - TEST MODE feel free to play!';
+}
+
 const fobney = new GeoTIFF({
     sources: [
         {
@@ -355,8 +366,13 @@ objName.onchange = function () {
 var curdatalayer = '';
 
 function showdatalayer(layername, filename) {
+    var path = 'https://the.earth.li/~huggie/fobney/data';
+    if (testMode) {
+        path = path + '-test';
+    }
+    path = path + '/'
     const datasource = new VectorSource({
-            url: 'https://the.earth.li/~huggie/fobney/data/'+filename,
+            url: path+filename,
             format: new GeoJSON(),
     });
     datalayer.setSource(datasource);
@@ -367,7 +383,12 @@ function showdatalayer(layername, filename) {
 };
 
 async function refreshDataLayers() {
-    const index = await fetch('https://the.earth.li/~huggie/fobney/data/index.json', {cache: "no-cache"});
+    var uri = 'https://the.earth.li/~huggie/fobney/data';
+    if (testMode) {
+        uri = uri + '-test';
+    }
+    uri = uri + '/index.json';
+    const index = await fetch(uri, {cache: "no-cache"});
 
     var addhtml = '';
     var js = await index.json();
@@ -460,6 +481,7 @@ document.getElementById('submit-comment').addEventListener('click', async functi
             site: "fobney",
             type: curdatalayer,
             "comment": comment,
+            "testmode": testMode,
             data: b64data
           }),
         headers: {
