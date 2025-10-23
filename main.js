@@ -1,3 +1,9 @@
+/*
+ * (C) Copyright 2025 Simon Huggins <huggie@earth.li>
+ * Licensed under 3-Clause BSD license:
+ * https://opensource.org/license/bsd-3-clause
+ */
+
 import './style.css';
 import {Map, View} from 'ol';
 import TileLayer from 'ol/layer/WebGLTile.js';
